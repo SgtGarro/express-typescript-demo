@@ -1,5 +1,6 @@
 import express from 'express'
 import { fakerES_MX as faker } from '@faker-js/faker'
+import type { Request } from 'express'
 import type { Product } from '@type/product'
 
 const router = express.Router()
@@ -38,6 +39,28 @@ router.get('/:id', (req, res) => {
     name: `Product ${id}`,
     price: 1000 * Number(id),
   })
+})
+
+router.post('/', (req: Request<object, unknown, Product>, res) => {
+  const { name, price, image } = req.body
+
+  if (!name || !price || !image)
+    return res.status(400).json({ message: 'Invalid data' })
+
+  res.status(200).json({ message: 'Product created', data: req.body })
+})
+
+router.patch('/:id', (req: Request<{ id: string }, unknown, Product>, res) => {
+  const { id } = req.params
+  const body = req.body
+
+  res.json({ message: `Product ${id} updated`, id, data: body })
+})
+
+router.delete('/:id', (req, res) => {
+  const { id } = req.params
+
+  res.json({ message: `Product ${id} deleted` })
 })
 
 export default router
