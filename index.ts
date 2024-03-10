@@ -1,4 +1,11 @@
 import express from 'express'
+import { fakerES_MX as faker } from '@faker-js/faker'
+
+interface Product {
+  name: string
+  price: number
+  image: string
+}
 
 const app = express()
 const port = 3000
@@ -8,16 +15,25 @@ app.get('/', (req, res) => {
 })
 
 app.get('/products', (req, res) => {
-  res.json([
-    {
-      name: 'Product 1',
-      price: 1000,
-    },
-    {
-      name: 'Product 2',
-      price: 2000,
-    },
-  ])
+  const limit = req.query.limit ? Number(req.query.limit) : 10
+
+  if (Number.isNaN(limit))
+    return res.status(400).json({ message: 'Invalid limit' })
+
+  const products: Product[] = Array.from<unknown, Product>(
+    { length: limit },
+    () => ({
+      name: faker.commerce.productName(),
+      price: +faker.commerce.price(),
+      image: faker.image.url(),
+    }),
+  )
+
+  res.json(products)
+})
+
+app.get('/products/filter', (req, res) => {
+  res.send("I'm a filter")
 })
 
 app.get('/products/:id', (req, res) => {
@@ -31,6 +47,17 @@ app.get('/products/:id', (req, res) => {
     id,
     name: `Product ${id}`,
     price: 1000 * Number(id),
+  })
+})
+
+app.get('/users', (req, res) => {
+  const { limit, offset } = req.query
+
+  if (!limit || !offset) return res.json({ message: 'Invalid query' })
+
+  res.json({
+    limit,
+    offset,
   })
 })
 
