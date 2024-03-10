@@ -10,8 +10,8 @@ interface Product {
 const app = express()
 const port = 3000
 
-app.get('/', (req, res) => {
-  res.send('Hello world from my!')
+app.get('/', (_, res) => {
+  res.send('Hello world from my peru!')
 })
 
 app.get('/products', (req, res) => {
@@ -32,7 +32,7 @@ app.get('/products', (req, res) => {
   res.json(products)
 })
 
-app.get('/products/filter', (req, res) => {
+app.get('/products/filter', (_, res) => {
   res.send("I'm a filter")
 })
 
