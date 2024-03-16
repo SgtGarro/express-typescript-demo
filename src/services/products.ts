@@ -1,9 +1,6 @@
 import { Product } from '../types/product'
 import { fakerES_MX as faker } from '@faker-js/faker'
-
-function wait(s: number) {
-  return new Promise((resolve) => setTimeout(resolve, s * 1000))
-}
+import boom from '@hapi/boom'
 
 class ProductsService {
   products: Product[]
@@ -14,18 +11,19 @@ class ProductsService {
       name: faker.commerce.productName(),
       price: Number(faker.commerce.price()),
       image: faker.image.url(),
+      isBlocked: faker.datatype.boolean(),
     }))
   }
 
-  async find() {
-    await wait(5)
+  find() {
     return this.products
   }
 
   findOne(id: string) {
     const product = this.products.find((product) => product.id === id)
 
-    if (!product) throw new Error('Product not found')
+    if (!product) throw boom.notFound('Product not found')
+    if (product.isBlocked) throw boom.forbidden('Product is blocked')
 
     return product
   }
@@ -50,7 +48,7 @@ class ProductsService {
   delete(id: string) {
     const index = this.products.findIndex((product) => product.id === id)
 
-    if (index === -1) throw new Error('Product not found')
+    if (index === -1) throw boom.notFound('Product not found')
 
     this.products.splice(index, 1)
   }
