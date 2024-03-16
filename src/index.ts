@@ -11,18 +11,18 @@ import {
 const app = express()
 const port = 3000
 
-const whitelist = ['http://localhost:5500', 'https://myapp.test.com']
-const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    if (whitelist.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-}
+// const whitelist = ['http://localhost:5500', 'https://myapp.test.com']
+// const corsOptions: CorsOptions = {
+//   origin: (origin, callback) => {
+//     if (whitelist.includes(origin)) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   },
+// }
 app.use(express.json())
-app.use(cors(corsOptions))
+app.use(cors())
 
 routerApi(app)
 
