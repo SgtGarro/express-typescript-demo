@@ -1,7 +1,4 @@
 {
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
   "compilerOptions": {
     "target": "es2016",
     "module": "CommonJS",
@@ -13,6 +10,5 @@
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
-  },
-  "include": ["src/**/*"]
+  }
 }

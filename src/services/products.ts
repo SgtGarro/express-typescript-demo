@@ -5,7 +5,7 @@ class ProductsService {
   products: Product[]
 
   constructor() {
-    this.products = Array.from<unknown, Product>({ length: 100 }, () => ({
+    this.products = Array.from<unknown, Product>({ length: 5 }, () => ({
       id: faker.string.uuid(),
       name: faker.commerce.productName(),
       price: Number(faker.commerce.price()),
@@ -22,14 +22,33 @@ class ProductsService {
 
     if (!product) throw new Error('Product not found')
 
-    return this.products.find((product) => product.id === id)
+    return product
   }
 
-  create() {}
+  create(data: Omit<Product, 'id'>) {
+    const product: Product = { id: faker.string.uuid(), ...data }
 
-  update() {}
+    this.products.push(product)
+  }
 
-  delete() {}
+  update(id: string, data: Omit<Partial<Product>, 'id'>) {
+    const index = this.products.findIndex((product) => product.id === id)
+
+    if (index === -1) throw new Error('Product not found')
+
+    const product = this.products[index]
+    this.products[index] = { ...product, ...data }
+
+    return this.products[index]
+  }
+
+  delete(id: string) {
+    const index = this.products.findIndex((product) => product.id === id)
+
+    if (index === -1) throw new Error('Product not found')
+
+    this.products.splice(index, 1)
+  }
 }
 
 export default ProductsService

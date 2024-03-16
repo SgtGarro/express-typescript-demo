@@ -21,39 +21,58 @@ router.get('/filter', (_, res) => {
 })
 
 router.get('/:id', (req, res) => {
-  const { id } = req.params
-  const idNumber = Number(id)
+  try {
+    const { id } = req.params
 
-  if (Number.isNaN(idNumber))
-    return res.status(400).json({ message: 'Invalid id' })
+    const product = service.findOne(id)
 
-  res.status(200).json({
-    id,
-    name: `Product ${id}`,
-    price: 1000 * Number(id),
-  })
+    res.status(200).json({ message: 'Product found', data: product })
+  } catch (err) {
+    res.status(404).json({ message: err.message })
+  }
 })
 
-router.post('/', (req: Request<object, unknown, Product>, res) => {
-  const { name, price, image } = req.body
+router.post('/', (req: Request<object, unknown, Omit<Product, 'id'>>, res) => {
+  try {
+    const { body } = req
 
-  if (!name || !price || !image)
-    return res.status(400).json({ message: 'Invalid data' })
+    service.create(body)
 
-  res.status(200).json({ message: 'Product created', data: req.body })
+    res.status(201).json({ message: 'Product created', data: body })
+  } catch (err) {
+    res.status(404).json({ message: err.message })
+  }
 })
 
-router.patch('/:id', (req: Request<{ id: string }, unknown, Product>, res) => {
-  const { id } = req.params
-  const body = req.body
+router.patch(
+  '/:id',
+  (
+    req: Request<{ id: string }, unknown, Omit<Partial<Product>, 'id'>>,
+    res,
+  ) => {
+    try {
+      const { id } = req.params
+      const { body } = req
 
-  res.status(200).json({ message: `Product ${id} updated`, id, data: body })
-})
+      const product = service.update(id, body)
+
+      res.status(200).json({ message: `Product ${id} updated`, data: product })
+    } catch (err) {
+      res.status(404).json({ message: err.message })
+    }
+  },
+)
 
 router.delete('/:id', (req, res) => {
-  const { id } = req.params
+  try {
+    const { id } = req.params
 
-  res.status(200).json({ message: `Product ${id} deleted` })
+    service.delete(id)
+
+    res.status(200).json({ message: `Product ${id} deleted` })
+  } catch (err) {
+    res.status(404).json({ message: err.message })
+  }
 })
 
 export default router
