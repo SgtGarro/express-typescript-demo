@@ -1,24 +1,17 @@
 import express from 'express'
-import { fakerES_MX as faker } from '@faker-js/faker'
 import type { Request } from 'express'
-import type { Product } from '@type/product'
+import type { Product } from '../types/product'
+import ProductsService from '../services/products'
 
 const router = express.Router()
+const service = new ProductsService()
 
 router.get('/', (req, res) => {
   const limit = req.query.limit ? Number(req.query.limit) : 10
-
   if (Number.isNaN(limit))
     return res.status(400).json({ message: 'Invalid limit' })
 
-  const products: Product[] = Array.from<unknown, Product>(
-    { length: limit },
-    () => ({
-      name: faker.commerce.productName(),
-      price: Number(faker.commerce.price()),
-      image: faker.image.url(),
-    }),
-  )
+  const products = service.find().slice(0, limit)
 
   res.json(products)
 })
@@ -54,13 +47,13 @@ router.patch('/:id', (req: Request<{ id: string }, unknown, Product>, res) => {
   const { id } = req.params
   const body = req.body
 
-  res.json({ message: `Product ${id} updated`, id, data: body })
+  res.status(200).json({ message: `Product ${id} updated`, id, data: body })
 })
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params
 
-  res.json({ message: `Product ${id} deleted` })
+  res.status(200).json({ message: `Product ${id} deleted` })
 })
 
 export default router
