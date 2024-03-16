@@ -6,7 +6,7 @@ import ProductsService from '../services/products'
 const router = express.Router()
 const service = new ProductsService()
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const limit = req.query.limit ? Number(req.query.limit) : 10
     if (Number.isNaN(limit))
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
     res.json(products)
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    next(err)
   }
 })
 
@@ -24,7 +24,7 @@ router.get('/filter', (_, res) => {
   res.send("I'm a filter")
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   try {
     const { id } = req.params
 
@@ -32,27 +32,31 @@ router.get('/:id', (req, res) => {
 
     res.status(200).json({ message: 'Product found', data: product })
   } catch (err) {
-    res.status(404).json({ message: err.message })
+    next(err)
   }
 })
 
-router.post('/', (req: Request<object, unknown, Omit<Product, 'id'>>, res) => {
-  try {
-    const { body } = req
+router.post(
+  '/',
+  (req: Request<object, unknown, Omit<Product, 'id'>>, res, next) => {
+    try {
+      const { body } = req
 
-    service.create(body)
+      service.create(body)
 
-    res.status(201).json({ message: 'Product created', data: body })
-  } catch (err) {
-    res.status(404).json({ message: err.message })
-  }
-})
+      res.status(201).json({ message: 'Product created', data: body })
+    } catch (err) {
+      next(err)
+    }
+  },
+)
 
 router.patch(
   '/:id',
   (
     req: Request<{ id: string }, unknown, Omit<Partial<Product>, 'id'>>,
     res,
+    next,
   ) => {
     try {
       const { id } = req.params
@@ -62,12 +66,12 @@ router.patch(
 
       res.status(200).json({ message: `Product ${id} updated`, data: product })
     } catch (err) {
-      res.status(404).json({ message: err.message })
+      next(err)
     }
   },
 )
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
   try {
     const { id } = req.params
 
@@ -75,7 +79,7 @@ router.delete('/:id', (req, res) => {
 
     res.status(200).json({ message: `Product ${id} deleted` })
   } catch (err) {
-    res.status(404).json({ message: err.message })
+    next(err)
   }
 })
 
