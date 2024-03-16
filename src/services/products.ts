@@ -1,6 +1,10 @@
 import { Product } from '../types/product'
 import { fakerES_MX as faker } from '@faker-js/faker'
 
+function wait(s: number) {
+  return new Promise((resolve) => setTimeout(resolve, s * 1000))
+}
+
 class ProductsService {
   products: Product[]
 
@@ -13,7 +17,8 @@ class ProductsService {
     }))
   }
 
-  find() {
+  async find() {
+    await wait(5)
     return this.products
   }
 

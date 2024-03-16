@@ -6,14 +6,18 @@ import ProductsService from '../services/products'
 const router = express.Router()
 const service = new ProductsService()
 
-router.get('/', (req, res) => {
-  const limit = req.query.limit ? Number(req.query.limit) : 10
-  if (Number.isNaN(limit))
-    return res.status(400).json({ message: 'Invalid limit' })
+router.get('/', async (req, res) => {
+  try {
+    const limit = req.query.limit ? Number(req.query.limit) : 10
+    if (Number.isNaN(limit))
+      return res.status(400).json({ message: 'Invalid limit' })
 
-  const products = service.find().slice(0, limit)
+    const products = (await service.find()).slice(0, limit)
 
-  res.json(products)
+    res.json(products)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
 })
 
 router.get('/filter', (_, res) => {
