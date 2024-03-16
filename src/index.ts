@@ -1,6 +1,6 @@
 import express from 'express'
 import routerApi from './routes'
-import cors, { type CorsOptions } from 'cors'
+import cors /* , { type CorsOptions } */ from 'cors'
 
 import {
   logErrors,
